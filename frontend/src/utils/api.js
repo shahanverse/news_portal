@@ -136,8 +136,9 @@ export const api = {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to upload image');
-    // Return the full URL for frontend usage
-    return `http://localhost:5001${data.url}`;
+    // Return the full URL dynamically based on the current backend domain
+    const baseDomain = API_BASE_URL.replace(/\/api$/, '');
+    return `${baseDomain}${data.url}`;
   },
 
   async getProfile() {

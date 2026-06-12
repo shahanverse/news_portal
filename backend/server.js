@@ -19,6 +19,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+const getFullUrl = (req, filePath) => {
+  if (!filePath) return '';
+  if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+    return filePath;
+  }
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const host = req.get('host');
+  return `${protocol}://${host}${filePath}`;
+};
+
 // Middlewares
 app.use(cors({
   origin: '*', // In development, allow all origins or map to http://localhost:5173
@@ -131,8 +141,13 @@ app.get('/api/articles', async (req, res) => {
     params.push(parseInt(limit), parseInt(offset));
 
     const articles = await dbAll(query, params);
+    const formattedArticles = articles.map(art => ({
+      ...art,
+      cover_image: getFullUrl(req, art.cover_image),
+      author_avatar: getFullUrl(req, art.author_avatar)
+    }));
     res.json({
-      articles,
+      articles: formattedArticles,
       pagination: {
         total: totalArticles,
         page: parseInt(page),
@@ -159,7 +174,12 @@ app.get('/api/articles/trending', async (req, res) => {
       LIMIT 5
     `;
     const articles = await dbAll(query, [nowIso]);
-    res.json(articles);
+    const formattedArticles = articles.map(art => ({
+      ...art,
+      cover_image: getFullUrl(req, art.cover_image),
+      author_avatar: getFullUrl(req, art.author_avatar)
+    }));
+    res.json(formattedArticles);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -189,7 +209,12 @@ app.get('/api/articles/:identifier', async (req, res) => {
     // Increment view counter
     await dbRun('UPDATE articles SET views = views + 1 WHERE id = ?', [article.id]);
 
-    res.json({ ...article, views: article.views + 1 });
+    res.json({
+      ...article,
+      views: article.views + 1,
+      cover_image: getFullUrl(req, article.cover_image),
+      author_avatar: getFullUrl(req, article.author_avatar)
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -225,7 +250,7 @@ app.post('/api/auth/login', async (req, res) => {
         username: user.username,
         email: user.email,
         name: user.name,
-        avatar: user.avatar,
+        avatar: getFullUrl(req, user.avatar),
         bio: user.bio
       }
     });
@@ -287,7 +312,11 @@ app.get('/api/admin/articles', authenticateToken, async (req, res) => {
 
     query += ' ORDER BY datetime(a.created_at) DESC';
     const articles = await dbAll(query, params);
-    res.json(articles);
+    const formattedArticles = articles.map(art => ({
+      ...art,
+      cover_image: getFullUrl(req, art.cover_image)
+    }));
+    res.json(formattedArticles);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -425,7 +454,10 @@ app.get('/api/admin/profile', authenticateToken, async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.json(user);
+    res.json({
+      ...user,
+      avatar: getFullUrl(req, user.avatar)
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -451,7 +483,10 @@ app.put('/api/admin/profile', authenticateToken, async (req, res) => {
     );
 
     const updatedUser = await dbGet('SELECT id, username, email, name, avatar, bio FROM users WHERE id = ?', [req.user.id]);
-    res.json(updatedUser);
+    res.json({
+      ...updatedUser,
+      avatar: getFullUrl(req, updatedUser.avatar)
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

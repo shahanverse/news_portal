@@ -95,7 +95,7 @@ export async function initDatabase() {
         hashedPassword,
         'shahan@newsportal.com',
         'Muhammed Shahan',
-        'http://localhost:5001/uploads/shahan_dp.jpg',
+        '/uploads/shahan_dp.jpg',
         'Lead editor with a passion for digital storytelling and news curation.'
       ]
     );
