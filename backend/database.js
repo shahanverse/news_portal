@@ -2,11 +2,16 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dbPath = path.join(__dirname, 'data', 'news.db');
+const dbDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+const dbPath = path.join(dbDir, 'news.db');
 const db = new sqlite3.Database(dbPath);
 
 // Helper functions for promise-based queries
