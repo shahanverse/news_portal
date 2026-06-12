@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { api } from '../utils/api';
 import { User, Mail, ImageIcon, FileText, Lock, ShieldAlert, CheckCircle, AlertCircle } from 'lucide-react';
 
@@ -94,7 +94,7 @@ export default function Profile({ user, setUser, setCurrentView }) {
       {/* Header */}
       <div className="mb-8 border-b border-slate-150 dark:border-slate-800 pb-5">
         <h1 className="font-display font-extrabold text-3xl text-slate-900 dark:text-white tracking-tight">
-          Staff Account Settings
+          Admin Account Settings
         </h1>
         <p className="text-slate-500 text-sm mt-1">
           Update your public author profile biography, change passwords, or modify credentials.

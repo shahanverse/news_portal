@@ -88,10 +88,10 @@ export async function initDatabase() {
       [
         'admin',
         hashedPassword,
-        'admin@newsportal.com',
-        'Sarah Jenkins',
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
-        'Editor-in-Chief with 10+ years of experience in digital journalism and tech reporting.'
+        'shahan@newsportal.com',
+        'Muhammed Shahan',
+        'http://localhost:5001/uploads/shahan_dp.jpg',
+        'Lead editor with a passion for digital storytelling and news curation.'
       ]
     );
     console.log('Seeded default admin user');
