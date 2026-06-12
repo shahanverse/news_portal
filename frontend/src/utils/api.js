@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://news-portal-l43y.onrender.com';
+const API_BASE_URL = 'https://news-portal-l43y.onrender.com/api';
 
 const getHeaders = (isMultipart = false) => {
   const token = localStorage.getItem('news_portal_token');
